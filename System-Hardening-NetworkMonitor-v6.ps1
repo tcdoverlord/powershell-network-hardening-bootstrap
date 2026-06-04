@@ -124,17 +124,13 @@ function Get-NetworkActivity {
 
 function Check-Suspicious($procName) {
 
-    $Indicators = @(
-        "inject",
-        "backdoor",
-        "keylogger",
-        "stealer",
-        "cryptominer",
-        "meterpreter",
-        "reverse_shell",
-        "payload",
-        "remoteadmin"
-    )
+$Indicators = @(
+    "inject",
+    "backdoor",
+    "keylogger",
+    "stealer",
+    "cryptominer"
+)
 
     foreach ($Indicator in $Indicators) {
         if ($procName -match $Indicator) {
