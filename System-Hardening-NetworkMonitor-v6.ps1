@@ -119,14 +119,29 @@ function Get-NetworkActivity {
 }
 
 # ======================================
-# 🧬 SUSPICIOUS DETECTION (CLEANED)
+# 🧬 SUSPICIOUS DETECTION
 # ======================================
 
 function Check-Suspicious($procName) {
-    $bad = @("lovense","inject","rat","backdoor")
-    foreach ($b in $bad) {
-        if ($procName -match $b) { return $true }
+
+    $Indicators = @(
+        "inject",
+        "backdoor",
+        "keylogger",
+        "stealer",
+        "cryptominer",
+        "meterpreter",
+        "reverse_shell",
+        "payload",
+        "remoteadmin"
+    )
+
+    foreach ($Indicator in $Indicators) {
+        if ($procName -match $Indicator) {
+            return $true
+        }
     }
+
     return $false
 }
 
