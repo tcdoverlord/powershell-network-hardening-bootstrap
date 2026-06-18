@@ -1,7 +1,7 @@
-# PowerShell Network Hardening Bootstrap
+# PowerShell Network Hardening Bootstrap (Bootloader System)
 
 <p align="center">
-  <img src="assets/architecture.png" alt="PowerShell Network Hardening Bootstrap Architecture" />
+  <img src="assets/architecture.png" alt="PowerShell Network Hardening Bootstrap Architecture Demo" />
 </p>
 
 <p align="center">
@@ -15,9 +15,9 @@
 
 # Important Concept
 
-PowerShell Network Hardening Bootstrap is a bootloader / unpacker engine. You run one setup script, choose where to install, and it unpacks the complete Windows network monitoring and hardening runtime.
+PowerShell Network Hardening Bootstrap is a bootloader / unpacker engine. You run one setup script, choose where to install, and it generates the complete Windows network monitoring and hardening runtime.
 
-The bootloader is for installation. The generated runtime folder is for daily use.
+The bootloader is for installation. The generated runtime scripts are for daily use.
 
 ---
 
@@ -32,8 +32,9 @@ The bootloader:
 - Asks where to install the toolkit.
 - Blocks unsafe Windows system install locations.
 - Unpacks the complete runtime payload.
-- Creates `Logs\` and `Backup\`.
+- Generates config, folders, scripts, logs, backups, and runtime docs.
 - Validates generated PowerShell and JSON files.
+- Fails clearly if generation fails.
 - Prints the launch command when complete.
 
 ---
@@ -100,8 +101,48 @@ That opens the runtime menu:
 
 ---
 
+# Direct Commands
+
+Start monitoring without the menu:
+
+```powershell
+.\Bootstrap-WindowsHardeningToolkit.ps1
+```
+
+Preview hardening without changing anything:
+
+```powershell
+.\Start-WindowsHardeningToolkit.ps1 -ApplyHardening -WhatIf
+```
+
+Apply the safe firewall baseline:
+
+```powershell
+.\Bootstrap-WindowsHardeningToolkit.ps1 -ApplyHardening
+```
+
+Restore latest saved firewall state:
+
+```powershell
+.\Restore-WindowsHardeningToolkit.ps1
+```
+
+---
+
+# Runtime Output
+
+```text
+C:\PowerShell-Network-Hardening-Bootstrap\Logs\
+C:\PowerShell-Network-Hardening-Bootstrap\Backup\
+```
+
+Logs track monitoring events and kill-switch exits. Backup stores restore points created before firewall changes.
+
+---
+
 # Safety Layer
 
+- Admin expected for hardening and restore actions.
 - Monitor-only is the default behavior.
 - Hardening is opt-in from the menu.
 - No UPnP/service-disabling actions are included.
@@ -114,7 +155,7 @@ That opens the runtime menu:
 
 # Status
 
-Safety-first bootstrap system.
+Safety-First Bootloader System v1.0
 
 ---
 
