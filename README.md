@@ -13,6 +13,7 @@ Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new T
 
 ## What It Does
 
+- Provides a simple interactive menu and double-click launcher.
 - Monitors by default without changing firewall or service settings.
 - Optionally enables Windows Firewall for Domain, Private, and Public profiles.
 - Optionally sets inbound traffic to block by default and outbound traffic to allow by default.
@@ -27,7 +28,9 @@ Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new T
 ## Repository Layout
 
 ```text
-windows-hardening-toolkit/
+powershell-network-hardening-bootstrap/
+|-- Launch-Toolkit.bat
+|-- Start-ToolkitMenu.ps1
 |-- Bootstrap-WindowsHardeningToolkit.ps1
 |-- Start-WindowsHardeningToolkit.ps1
 |-- Restore-WindowsHardeningToolkit.ps1
@@ -46,14 +49,40 @@ windows-hardening-toolkit/
 
 ## Quick Start
 
-Open PowerShell as Administrator, then run in monitoring-only mode:
+Double-click:
+
+```text
+Launch-Toolkit.bat
+```
+
+Or open PowerShell as Administrator and run:
 
 ```powershell
-cd "C:\GitHub_Backups\tcdoverlord\windows-hardening-toolkit"
+cd "C:\GitHub_Backups\tcdoverlord\powershell-network-hardening-bootstrap"
+.\Start-ToolkitMenu.ps1
+```
+
+The menu provides:
+
+```text
+1. Start monitor-only mode
+2. Preview safe hardening changes
+3. Apply safe firewall baseline
+4. Restore latest backup
+5. Open logs folder
+6. Run safety check
+7. Exit
+```
+
+You can still run the lower-level scripts directly.
+
+Start monitoring only:
+
+```powershell
 .\Bootstrap-WindowsHardeningToolkit.ps1
 ```
 
-Apply the firewall baseline only when no VM/virtual networking activity is detected:
+Apply the firewall baseline only when no VM or virtual networking activity is detected:
 
 ```powershell
 .\Bootstrap-WindowsHardeningToolkit.ps1 -ApplyHardening
