@@ -25,6 +25,10 @@ Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new T
 - Classifies activity as LOW, MEDIUM, or HIGH risk.
 - Supports process whitelisting, ignored IPs, high-risk ports, logs, and optional pop-up alerts.
 
+## Architecture
+
+![Toolkit Architecture](assets/architecture.png)
+
 ## Repository Layout
 
 ```text
@@ -35,6 +39,7 @@ powershell-network-hardening-bootstrap/
 |-- Start-WindowsHardeningToolkit.ps1
 |-- Restore-WindowsHardeningToolkit.ps1
 |-- assets/
+|   |-- architecture.png
 |   `-- readme-banner.png
 |-- monitor-config.json
 |-- README.md
