@@ -5,14 +5,18 @@
   <img src="https://img.shields.io/badge/Status-Active-2f855a?style=for-the-badge" alt="Project status" />
 </p>
 
-# Windows Hardening Toolkit
+# PowerShell Network Hardening Bootstrap
 
-Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new TCP activity and optionally applying a conservative Windows firewall baseline. It is designed for labs, personal workstations, and administrator review workflows where readable logs, rollback, and simple configuration matter.
+PowerShell Network Hardening Bootstrap is a defensive PowerShell bootloader that unpacks a complete Windows network monitoring and hardening toolkit into a user-selected folder.
+
+The bootstrap script is for installation. The generated runtime folder is for daily use.
 
 ![Toolkit Architecture](assets/architecture.png)
 
 ## What It Does
 
+- Runs as a setup/unpacker with a user-selected install location.
+- Generates the complete runtime toolkit folder.
 - Provides a simple interactive menu and double-click launcher.
 - Monitors by default without changing firewall or service settings.
 - Optionally enables Windows Firewall for Domain, Private, and Public profiles.
@@ -29,6 +33,7 @@ Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new T
 
 ```text
 powershell-network-hardening-bootstrap/
+|-- PowerShell_Network_Hardening_Bootstrap_Setup.ps1
 |-- Launch-Toolkit.bat
 |-- Start-ToolkitMenu.ps1
 |-- Bootstrap-WindowsHardeningToolkit.ps1
@@ -50,16 +55,52 @@ powershell-network-hardening-bootstrap/
 
 ## Quick Start
 
+Open PowerShell and run the bootstrap setup:
+
+```powershell
+cd "C:\GitHub_Backups\tcdoverlord\powershell-network-hardening-bootstrap"
+.\PowerShell_Network_Hardening_Bootstrap_Setup.ps1
+```
+
+The setup prompts for an install location. Press Enter to use:
+
+```text
+C:\PowerShell-Network-Hardening-Bootstrap
+```
+
+## Generated Runtime
+
+After setup, the selected install folder contains:
+
+```text
+C:\PowerShell-Network-Hardening-Bootstrap\
+|-- Launch-Toolkit.bat
+|-- Start-ToolkitMenu.ps1
+|-- Bootstrap-WindowsHardeningToolkit.ps1
+|-- Start-WindowsHardeningToolkit.ps1
+|-- Restore-WindowsHardeningToolkit.ps1
+|-- monitor-config.json
+|-- README.md
+|-- LICENSE
+|-- assets\
+|   |-- architecture.png
+|   `-- readme-banner.png
+|-- Backup\
+`-- Logs\
+```
+
+Daily use from the generated folder:
+
 Double-click:
 
 ```text
 Launch-Toolkit.bat
 ```
 
-Or open PowerShell as Administrator and run:
+Or open PowerShell as Administrator:
 
 ```powershell
-cd "C:\GitHub_Backups\tcdoverlord\powershell-network-hardening-bootstrap"
+cd "C:\PowerShell-Network-Hardening-Bootstrap"
 .\Start-ToolkitMenu.ps1
 ```
 
@@ -75,7 +116,7 @@ The menu provides:
 7. Exit
 ```
 
-You can still run the lower-level scripts directly.
+You can still run the lower-level scripts directly from the generated runtime folder.
 
 Start monitoring only:
 
