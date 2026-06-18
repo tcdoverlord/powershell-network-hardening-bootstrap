@@ -1,294 +1,185 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/PowerShell-Security-blue?style=for-the-badge&logo=powershell" />
-  <img src="https://img.shields.io/badge/Windows-10%2F11-0078D6?style=for-the-badge&logo=windows" />
-  <img src="https://img.shields.io/badge/Network-Monitoring-green?style=for-the-badge&logo=icloud" />
-  <img src="https://img.shields.io/badge/Firewall-Hardening-orange?style=for-the-badge&logo=windows-defender" />
-  <img src="https://img.shields.io/badge/Status-Stable-brightgreen?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/PowerShell-5.1%2B-2f6db3?style=for-the-badge&logo=powershell" alt="PowerShell 5.1+" />
+  <img src="https://img.shields.io/badge/Windows-10%20%2F%2011-0078D6?style=for-the-badge&logo=windows" alt="Windows 10 and 11" />
+  <img src="https://img.shields.io/badge/Security-Hardening-c43b3b?style=for-the-badge&logo=windowsdefender" alt="Security hardening" />
+  <img src="https://img.shields.io/badge/Status-Active-2f855a?style=for-the-badge" alt="Project status" />
 </p>
 
-# 🛡️ Windows Hardening Toolkit
+# Windows Hardening Toolkit
 
-A security-focused PowerShell toolkit designed to harden Windows systems, reduce attack surfaces, and provide continuous network monitoring with configurable alerts, logging, and process whitelisting.
+Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new TCP activity and optionally applying a conservative Windows firewall baseline. It is designed for labs, personal workstations, and administrator review workflows where readable logs, rollback, and simple configuration matter.
 
----
+![Windows Hardening Toolkit demo](windows-hardening-toolkit-demo.gif)
 
-## 🎬 Demo
+## What It Does
 
-<p align="center">
-  <img src="windows-hardening-toolkit-demo.gif" alt="Windows Hardening Toolkit Demo" />
-</p>
+- Monitors by default without changing firewall or service settings.
+- Optionally enables Windows Firewall for Domain, Private, and Public profiles.
+- Optionally sets inbound traffic to block by default and outbound traffic to allow by default.
+- Creates a restore point before applying hardening changes.
+- Refuses hardening when VM, WSL, Docker, or virtual networking activity is detected.
+- Exits during monitoring if a VM, WSL, or Docker workload starts.
+- Adds duplicate-safe outbound allow rules for Chrome and Microsoft Edge when installed.
+- Monitors new TCP connections and listening ports.
+- Classifies activity as LOW, MEDIUM, or HIGH risk.
+- Supports process whitelisting, ignored IPs, high-risk ports, logs, and optional pop-up alerts.
 
----
-
-# 🧠 Overview
-
-Windows Hardening Toolkit combines system hardening and network monitoring into a single automation solution.
-
-The toolkit establishes a secure baseline configuration, monitors network activity in real time, classifies connection risk, and generates alerts when suspicious activity is detected.
-
-### Security Objectives
-
-* Reduce common Windows attack surfaces
-* Enforce firewall protection
-* Monitor active network connections
-* Detect potentially suspicious activity
-* Generate security-focused logging and alerts
-* Provide lightweight defensive monitoring
-
----
-
-# ✨ Features
-
-## 🔐 Security Hardening
-
-* Enables Windows Firewall across all profiles
-* Applies secure inbound and outbound firewall policies
-* Disables Universal Plug and Play (UPnP)
-* Preserves browser connectivity through allow rules
-* Reduces common Windows attack surfaces
-
-## 🌐 Network Monitoring
-
-* Monitors active TCP connections
-* Detects newly opened ports
-* Tracks listening and established connections
-* Supports process whitelisting
-* Supports trusted IP exclusions
-* Continuously monitors network activity
-
-## 🚨 Alerting & Detection
-
-* Real-time security notifications
-* High-risk port monitoring
-* Suspicious process detection
-* Connection risk classification
-* Automatic event logging
-
-## 📋 Logging
-
-* Timestamped activity logs
-* Historical event tracking
-* Organized log storage
-* Security event auditing
-* Automatic log generation
-
----
-
-# 💻 Requirements
-
-## Supported Operating Systems
-
-* Windows 10
-* Windows 11
-
-## Required Software
-
-* PowerShell 5.1 or newer
-* Administrator privileges
-
----
-
-# 🚀 Quick Start
-
-## 1. Create Working Directory
+## Repository Layout
 
 ```text
-C:\Update Code
+windows-hardening-toolkit/
+|-- Bootstrap-WindowsHardeningToolkit.ps1
+|-- Start-WindowsHardeningToolkit.ps1
+|-- Restore-WindowsHardeningToolkit.ps1
+|-- monitor-config.json
+|-- README.md
+|-- LICENSE
+`-- windows-hardening-toolkit-demo.gif
 ```
 
-## 2. Add Required Files
+## Requirements
 
-```text
-C:\Update Code
-│
-├── System-Hardening-NetworkMonitor-v6.ps1
-└── monitor-config.json
-```
+- Windows 10 or Windows 11
+- PowerShell 5.1 or newer
+- Administrator PowerShell session
 
-## 3. Open PowerShell as Administrator
+## Quick Start
 
-## 4. Navigate to Directory
+Open PowerShell as Administrator, then run in monitoring-only mode:
 
 ```powershell
-cd "C:\Update Code"
+cd "C:\GitHub_Backups\tcdoverlord\windows-hardening-toolkit"
+.\Bootstrap-WindowsHardeningToolkit.ps1
 ```
 
-## 5. Unblock Script (if downloaded)
+Apply the firewall baseline only when no VM/virtual networking activity is detected:
 
 ```powershell
-Unblock-File .\System-Hardening-NetworkMonitor-v6.ps1
+.\Bootstrap-WindowsHardeningToolkit.ps1 -ApplyHardening
 ```
 
-## 6. Launch Toolkit
+Run without pop-up alerts:
 
 ```powershell
-.\System-Hardening-NetworkMonitor-v6.ps1
+.\Bootstrap-WindowsHardeningToolkit.ps1 -NoAlerts
 ```
 
-Or:
+Change the monitoring interval:
 
 ```powershell
-cd "C:\Update Code"; Unblock-File .\System-Hardening-NetworkMonitor-v6.ps1; .\System-Hardening-NetworkMonitor-v6.ps1
+.\Bootstrap-WindowsHardeningToolkit.ps1 -MonitorIntervalSeconds 10
 ```
 
----
+You can also run the main script directly:
 
-# ⚙️ Configuration
+```powershell
+.\Start-WindowsHardeningToolkit.ps1
+```
 
-The toolkit uses:
+Preview hardening changes without applying them:
+
+```powershell
+.\Start-WindowsHardeningToolkit.ps1 -ApplyHardening -WhatIf
+```
+
+Restore the latest saved firewall/service state:
+
+```powershell
+.\Restore-WindowsHardeningToolkit.ps1
+```
+
+Restore from a specific restore point:
+
+```powershell
+.\Restore-WindowsHardeningToolkit.ps1 -RestorePointPath ".\Backup\RestorePoint_20260618_173000.json"
+```
+
+## Configuration
+
+The toolkit reads settings from [monitor-config.json](monitor-config.json).
+
+```json
+{
+  "Whitelist": [
+    "chrome",
+    "msedge",
+    "firefox",
+    "explorer",
+    "svchost",
+    "system"
+  ],
+  "IgnoredIPs": [
+    "127.0.0.1",
+    "::1",
+    "0.0.0.0"
+  ],
+  "HighRiskPorts": [
+    4444,
+    1337,
+    5555,
+    6666,
+    8081
+  ]
+}
+```
+
+## Generated Folders
+
+The script creates these folders inside the repository at runtime:
 
 ```text
-monitor-config.json
+Logs/
+Backup/
 ```
 
-### Process Whitelist
-
-Trusted processes excluded from alert generation.
-
-Examples:
-
-* Chrome
-* Microsoft Edge
-* OBS Studio
-* Windows System Processes
-
-### Ignored IP Addresses
-
-Trusted IP addresses excluded from monitoring.
-
-Examples:
-
-* 127.0.0.1
-* ::1
-* Internal infrastructure addresses
-
-### High-Risk Ports
-
-Ports that trigger elevated monitoring.
-
-Examples:
-
-* 4444
-* 5555
-* 6666
-* Custom administrative ports
-
----
-
-# 🔄 Monitoring Workflow
+Logs are named with a timestamp, for example:
 
 ```text
-START
-  ↓
-Load Configuration
-  ↓
-Apply Firewall Baseline
-  ↓
-Disable UPnP
-  ↓
-Capture Initial Network State
-  ↓
-Create Connection Baseline
-  ↓
-Monitor Network Activity
-  ↓
-Classify Connection Risk
-  ↓
-Generate Alerts
-  ↓
-Write Security Logs
-  ↓
-CONTINUOUS MONITORING
+Logs/PortLog_20260618_173000.txt
 ```
 
----
-
-# 🧠 Risk Classification
-
-| Level  | Description                                                          |
-| ------ | -------------------------------------------------------------------- |
-| LOW    | Normal network activity                                              |
-| MEDIUM | Suspicious or unexpected activity                                    |
-| HIGH   | Listening ports, suspicious processes, or configured high-risk ports |
-
----
-
-# 🚨 Alert Conditions
-
-Alerts are generated when:
-
-* High-risk ports are detected
-* Suspicious process names are identified
-* New listening ports appear
-* Unexpected network activity is observed
-* Configured monitoring thresholds are exceeded
-
----
-
-# 📂 Generated Directories
+Restore points are created before hardening changes:
 
 ```text
-C:\Update Code\Logs
-C:\Update Code\Backup
+Backup/RestorePoint_20260618_173000.json
 ```
 
-These directories are automatically created during operation.
+## Risk Classification
 
----
+| Level | Trigger |
+| --- | --- |
+| LOW | Routine TCP activity that does not match a higher-risk rule. |
+| MEDIUM | New established, SYN sent, or SYN received connections. |
+| HIGH | New listening ports or ports listed in `HighRiskPorts`. |
 
-# 📋 Log Storage
+## Safety Notes
 
-Security logs are stored in:
+- Review `monitor-config.json` before running the toolkit.
+- Test in a non-production environment before using on critical systems.
+- The default bootstrap command monitors only and does not change firewall or service settings.
+- Use `-ApplyHardening` only after reviewing the expected impact.
+- Hardening has no force override. It stops itself when Hyper-V, VMware, VirtualBox, WSL, Docker, VPN-style adapters, or other virtual networking indicators are detected.
+- Runtime monitoring also exits if a VM, WSL, or Docker workload starts after the toolkit is already running.
+- Stop VM/WSL/Docker workloads before applying hardening on a host machine.
+- Do not whitelist unknown processes just to silence alerts.
+- Keep Windows Firewall enabled while using the toolkit.
 
-```text
-C:\Update Code\Logs
-```
+## Project Goals
 
-Logged information includes:
+This project demonstrates practical Windows administration with native tooling:
 
-* Connection activity
-* Risk classifications
-* Alert events
-* Monitoring status
-* Security notifications
+- PowerShell automation
+- Windows Firewall management
+- Network activity monitoring
+- Defensive logging
+- Configuration-driven security workflows
 
----
-
-# ⚠️ Important Notes
-
-* Do not disable Windows Firewall while using the toolkit
-* Do not whitelist unknown applications
-* Do not remove required networking services
-* Review configuration settings before deployment
-* Test changes in a non-production environment when possible
-
----
-
-# 🎯 Project Goals
-
-Windows Hardening Toolkit was developed to demonstrate:
-
-* PowerShell Automation
-* Windows Security Administration
-* Firewall Management
-* Network Activity Analysis
-* Process Monitoring
-* Configuration Management
-* Event Logging
-* Security Alerting
-
-The project emphasizes lightweight security automation using native Windows technologies and PowerShell.
-
----
-
-# 👨‍💻 Author
+## Author
 
 **TCDOverLord**
 
-GitHub: https://github.com/tcdoverlord
+GitHub: [tcdoverlord](https://github.com/tcdoverlord)
 
----
+## Disclaimer
 
-# ⚠️ Disclaimer
-
-This project is intended for educational, defensive security, and system administration purposes. Review all security settings before deployment and test thoroughly in your own environment.
+This project is intended for educational, defensive security, and system administration purposes. Review the code and configuration before running it on any system you rely on.
