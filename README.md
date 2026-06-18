@@ -9,7 +9,7 @@
 
 Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new TCP activity and optionally applying a conservative Windows firewall baseline. It is designed for labs, personal workstations, and administrator review workflows where readable logs, rollback, and simple configuration matter.
 
-![PowerShell Network Hardening Bootstrap](assets/readme-banner.png)
+![Toolkit Architecture](assets/architecture.png)
 
 ## What It Does
 
@@ -24,10 +24,6 @@ Windows Hardening Toolkit is a defensive PowerShell utility for monitoring new T
 - Monitors new TCP connections and listening ports.
 - Classifies activity as LOW, MEDIUM, or HIGH risk.
 - Supports process whitelisting, ignored IPs, high-risk ports, logs, and optional pop-up alerts.
-
-## Architecture
-
-![Toolkit Architecture](assets/architecture.png)
 
 ## Repository Layout
 
