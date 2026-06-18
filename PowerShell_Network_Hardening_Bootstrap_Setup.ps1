@@ -3,9 +3,9 @@
 Unpacks PowerShell Network Hardening Bootstrap into a user-selected folder.
 
 .DESCRIPTION
-This bootstrap installer copies the complete toolkit runtime from the repository
-folder into a chosen install location, creates runtime folders, validates the
-generated files, and prints the launch command.
+This repository is a lightweight bootstrap. The setup script expands the
+runtime payload, creates working folders, validates the generated files, and
+prints the launch command.
 #>
 
 [CmdletBinding()]
@@ -28,7 +28,7 @@ function Write-Step {
         [Parameter(Mandatory = $true)][scriptblock]$Action
     )
 
-    Write-Host ("{0,-44}" -f $Label) -NoNewline
+    Write-Host ("{0,-42}" -f $Label) -NoNewline
     try {
         & $Action
         Write-Host 'OK' -ForegroundColor Green
@@ -39,12 +39,12 @@ function Write-Step {
     }
 }
 
-function Test-SafeInstallPath {
+function Resolve-SafeInstallPath {
     param([Parameter(Mandatory = $true)][string]$Path)
 
     $fullPath = [System.IO.Path]::GetFullPath($Path)
     $blockedRoots = @(
-        "$env:WINDIR",
+        $env:WINDIR,
         (Join-Path $env:WINDIR 'System32'),
         (Join-Path $env:ProgramFiles 'WindowsApps')
     ) | Where-Object { -not [string]::IsNullOrWhiteSpace($_) }
@@ -72,36 +72,10 @@ function Test-PowerShellScript {
     }
 }
 
-function Copy-ToolkitFile {
-    param(
-        [Parameter(Mandatory = $true)][string]$Source,
-        [Parameter(Mandatory = $true)][string]$Destination
-    )
-
-    if (-not (Test-Path -LiteralPath $Source -PathType Leaf)) {
-        Stop-Bootstrap "Missing source file: $Source"
-    }
-
-    Copy-Item -LiteralPath $Source -Destination $Destination -Force
-
-    if (-not (Test-Path -LiteralPath $Destination -PathType Leaf)) {
-        Stop-Bootstrap "Failed to create file: $Destination"
-    }
-
-    if ((Get-Item -LiteralPath $Destination).Length -eq 0) {
-        Stop-Bootstrap "Generated file is empty: $Destination"
-    }
-}
-
-function Assert-GeneratedToolkit {
+function Assert-GeneratedRuntime {
     param([Parameter(Mandatory = $true)][string]$Root)
 
-    $requiredFolders = @(
-        'assets',
-        'Backup',
-        'Logs'
-    )
-
+    $requiredFolders = @('Backup', 'Logs')
     $requiredFiles = @(
         'Launch-Toolkit.bat',
         'Start-ToolkitMenu.ps1',
@@ -110,9 +84,7 @@ function Assert-GeneratedToolkit {
         'Restore-WindowsHardeningToolkit.ps1',
         'monitor-config.json',
         'README.md',
-        'LICENSE',
-        'assets\architecture.png',
-        'assets\readme-banner.png'
+        'LICENSE'
     )
 
     foreach ($folder in $requiredFolders) {
@@ -155,6 +127,11 @@ Write-Host 'PowerShell Network Hardening Bootstrap Setup' -ForegroundColor Cyan
 Write-Host '=================================================' -ForegroundColor Cyan
 
 $defaultInstall = 'C:\PowerShell-Network-Hardening-Bootstrap'
+$payloadPath = Join-Path $PSScriptRoot 'assets\runtime-payload.zip'
+
+if (-not (Test-Path -LiteralPath $payloadPath -PathType Leaf)) {
+    Stop-Bootstrap "Missing runtime payload: $payloadPath"
+}
 
 if ([string]::IsNullOrWhiteSpace($InstallPath)) {
     Write-Host ''
@@ -166,40 +143,24 @@ if ([string]::IsNullOrWhiteSpace($InstallPath)) {
     $InstallPath = $defaultInstall
 }
 
-$installRoot = Test-SafeInstallPath -Path $InstallPath
-$sourceRoot = $PSScriptRoot
+$installRoot = Resolve-SafeInstallPath -Path $InstallPath
 
 Write-Host ''
-Write-Host "Source:  $sourceRoot" -ForegroundColor DarkGray
+Write-Host "Payload: $payloadPath" -ForegroundColor DarkGray
 Write-Host "Install: $installRoot" -ForegroundColor Green
 Write-Host ''
 
-$filesToCopy = @(
-    'Launch-Toolkit.bat',
-    'Start-ToolkitMenu.ps1',
-    'Bootstrap-WindowsHardeningToolkit.ps1',
-    'Start-WindowsHardeningToolkit.ps1',
-    'Restore-WindowsHardeningToolkit.ps1',
-    'monitor-config.json',
-    'README.md',
-    'LICENSE'
-)
-
-Write-Step 'Creating install folders' {
-    foreach ($folder in @($installRoot, (Join-Path $installRoot 'assets'), (Join-Path $installRoot 'Backup'), (Join-Path $installRoot 'Logs'))) {
-        New-Item -ItemType Directory -Force -Path $folder | Out-Null
-    }
+Write-Step 'Creating install folder' {
+    New-Item -ItemType Directory -Force -Path $installRoot | Out-Null
 }
 
-Write-Step 'Copying toolkit runtime files' {
-    foreach ($file in $filesToCopy) {
-        Copy-ToolkitFile -Source (Join-Path $sourceRoot $file) -Destination (Join-Path $installRoot $file)
-    }
+Write-Step 'Unpacking runtime payload' {
+    Expand-Archive -LiteralPath $payloadPath -DestinationPath $installRoot -Force
 }
 
-Write-Step 'Copying README image assets' {
-    foreach ($asset in @('architecture.png', 'readme-banner.png')) {
-        Copy-ToolkitFile -Source (Join-Path $sourceRoot "assets\$asset") -Destination (Join-Path $installRoot "assets\$asset")
+Write-Step 'Creating runtime folders' {
+    foreach ($folder in @('Backup', 'Logs')) {
+        New-Item -ItemType Directory -Force -Path (Join-Path $installRoot $folder) | Out-Null
     }
 }
 
@@ -209,8 +170,8 @@ Write-Step 'Unblocking installed scripts' {
     }
 }
 
-Write-Step 'Validating generated toolkit' {
-    Assert-GeneratedToolkit -Root $installRoot
+Write-Step 'Validating generated runtime' {
+    Assert-GeneratedRuntime -Root $installRoot
 }
 
 Write-Host ''
@@ -218,9 +179,9 @@ Write-Host 'BOOTSTRAP COMPLETE' -ForegroundColor Green
 Write-Host "Toolkit installed at: $installRoot"
 Write-Host ''
 Write-Host 'Launch options:'
-Write-Host "  Double-click: $([System.IO.Path]::Combine($installRoot, 'Launch-Toolkit.bat'))"
+Write-Host ("  Double-click: {0}" -f ([System.IO.Path]::Combine($installRoot, 'Launch-Toolkit.bat')))
 Write-Host '  PowerShell:'
-Write-Host "    cd `"$installRoot`""
+Write-Host ("    cd ""{0}""" -f $installRoot)
 Write-Host '    .\Start-ToolkitMenu.ps1'
 Write-Host ''
 Write-Host 'PowerShell Network Hardening Bootstrap is ready.' -ForegroundColor Cyan
