@@ -1,4 +1,4 @@
-# PowerShell Network Hardening Bootstrap (Bootloader System)
+# PowerShell Network Hardening Bootstrap (Bootstrap System)
 
 <p align="center">
   <img src="assets/architecture.png" alt="PowerShell Network Hardening Bootstrap Architecture Demo" />
@@ -15,9 +15,9 @@
 
 # Important Concept
 
-PowerShell Network Hardening Bootstrap is a bootloader / unpacker engine. You run one setup script, choose where to install, and it generates the complete Windows network monitoring and hardening runtime.
+PowerShell Network Hardening Bootstrap is a bootstrap / unpacker engine. You run one setup script, choose where to install, and it generates the complete Windows network monitoring and hardening runtime.
 
-The bootloader is for installation. The generated runtime scripts are for daily use.
+The bootstrap is for installation. The generated runtime scripts are for daily use.
 
 ---
 
@@ -27,7 +27,7 @@ The bootloader is for installation. The generated runtime scripts are for daily 
 .\PowerShell_Network_Hardening_Bootstrap_Setup.ps1
 ```
 
-The bootloader:
+The bootstrap:
 
 - Asks where to install the toolkit.
 - Blocks unsafe Windows system install locations.
@@ -155,7 +155,7 @@ Logs track monitoring events and kill-switch exits. Backup stores restore points
 
 # Status
 
-Safety-First Bootloader System v1.0
+Safety-First Bootstrap System v1.0
 
 ---
 
